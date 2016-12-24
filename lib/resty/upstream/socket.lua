@@ -760,7 +760,8 @@ function _M.connect(self, sock, key)
                 set_timeout(sock, pool.timeout)
 
                 -- Load balance between available hosts using specified method
-                connected, sock, host, err = available_methods[pool.method](self, pool, sock, key)
+                --connected, sock, host, err = available_methods[pool.method](self, pool, sock, key)
+                connected, sock, host, err = available_methods[pool.method](self, pool, sock, ngx.var.uri)
 
                 if connected then
                     -- Return connected socket!
