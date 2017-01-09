@@ -577,8 +577,15 @@ end
 _M.available_methods.hash = function(self, pool, sock, key)
     local hosts    = pool.hosts
     local poolid   = pool.id
-	local hash_key = key or ngx.var.remote_addr
-
+    -- TODO:
+    -- if originservers is customers os, we should set default_hash_key with ngx.var.remote_addr
+    -- to keep session
+    -- $host$uri$is_args$args
+    default_hash_key = ngx.var.host..ngx.var.uri
+    if ngx.var.args ~= nil then
+      default_hash_key = default_hash_key..ngx.var.is_args..ngx.var.args
+    end
+	  local hash_key = key or default_hash_key
     local failed_hosts = self:get_failed_hosts(poolid)
 
     -- Attempt a connection
@@ -760,8 +767,7 @@ function _M.connect(self, sock, key)
                 set_timeout(sock, pool.timeout)
 
                 -- Load balance between available hosts using specified method
-                --connected, sock, host, err = available_methods[pool.method](self, pool, sock, key)
-                connected, sock, host, err = available_methods[pool.method](self, pool, sock, ngx.var.uri)
+                connected, sock, host, err = available_methods[pool.method](self, pool, sock, key)
 
                 if connected then
                     -- Return connected socket!
