@@ -377,7 +377,7 @@ function _M.remove_host(self, poolid, hostid)
         self:unlock_pools()
         return nil, 'Host not found'
     end
-    pool.hosts[host_idx] = nil
+    table.remove(pool.hosts, host_idx)
 
     ngx_log(ngx_DEBUG, str_format('Host "%s" removed from "%s"', hostid, poolid))
     local ok, err = self:save_pools(pools)
